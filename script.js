@@ -1,64 +1,61 @@
-function getPlayerChoice (message = 'Rock, Paper or Scissors?') {
-    const p = prompt(message).toLowerCase();
+const buttons = document.querySelectorAll('button');
+const results = document.querySelector('div');
 
-    if (p === 'rock' || p === 'r')
-        return 0;
-    if (p === 'paper' || p === 'p')
-        return 1;
-    if (p === 'scissors' || p === 's')
-        return 2;
+let playerScore = 0;
+let computerScore = 0;
+let round = 0;
 
-    return getPlayerChoice('Invalid input, try again! Rock, Paper or Scissors?');
+buttons.forEach(btn => btn.addEventListener('click', clickHandler));
+
+function playRound (playerSelection, computerSelection) {
+    const line = document.createElement('p');
+    line.textContent = `Round ${++round}: `;
+
+    let diff = playerSelection - computerSelection;
+    if (Math.abs(diff) === 2)
+        diff /= -2;
+
+    switch (diff) {
+        case 1:
+            playerScore++;
+            line.textContent += `You win! ${numToName(playerSelection)} ${playerSelection === 2 ? 'beat' : 'beats'} ${numToName(computerSelection)}\n`;
+            break;
+        case -1:
+            computerScore++;
+            line.textContent += `You lose! ${numToName(computerSelection)} ${computerSelection === 2 ? 'beat' : 'beats'} ${numToName(playerSelection)}\n`;
+            break;
+        default:
+            line.textContent += 'Draw!\n';
+    }
+
+    results.appendChild(line);
+}
+
+function gameOver() {
+    buttons.forEach(btn => btn.removeEventListener('click', clickHandler));
+
+    const line = document.createElement('p');
+    line.style.fontWeight = 900;
+
+    if (playerScore === 5)
+        line.textContent = `You won the game with the score of ${playerScore} against the enemy score of ${computerScore}!`;
+    else
+        line.textContent = `You lost the game with the score of ${playerScore} against the enemy score of ${computerScore}!`;
+
+    results.appendChild(line);
 }
 
 function getComputerChoice() {
     return Math.floor(Math.random() * 3);
 }
 
-function playRound (playerSelection, computerSelection) {
-    let diff = playerSelection - computerSelection;
-
-    if (Math.abs(diff) === 2)
-        diff /= -2;
-
-    return diff;
-}
-
-function game() {
-    let playerSelection;
-    let computerSelection;
-
-    let playerScore = 0;
-    let computerScore = 0;
-    
-    for (let i = 1; i <= 5; i++) {
-        playerSelection = getPlayerChoice();
-        computerSelection = getComputerChoice();
-
-        console.log(`Round ${i}:\n`)
-
-        const diff = playRound(playerSelection, computerSelection);
-
-        switch (diff) {
-            case 0:
-                console.log('Draw!\n\n');
-                break;
-            case 1:
-                console.log(`You win! ${numToName(playerSelection)} ${playerSelection === 2 ? 'beat' : 'beats'} ${numToName(computerSelection)}\n\n`);
-                playerScore++;
-                break;
-            default:
-                console.log(`You lose! ${numToName(computerSelection)} ${computerSelection === 2 ? 'beat' : 'beats'} ${numToName(playerSelection)}\n\n`);
-                computerScore++;
-        }
+function clickHandler (event) {
+    if (playerScore === 5 || computerScore === 5) {
+        gameOver();
+        return;
     }
 
-    if (playerScore > computerScore)
-        console.log(`You won the game with the score of ${playerScore} against the enemy score of ${computerScore}!`);
-    else if (playerScore < computerScore)
-        console.log(`You lost the game with the score of ${playerScore} against the enemy score of ${computerScore}!`);
-    else
-        console.log(`Draw! Both players scored ${playerScore}`);
+    playRound(parseInt(event.target.value), getComputerChoice());
 }
 
 function numToName (number) {
@@ -71,5 +68,3 @@ function numToName (number) {
             return 'Scissors';
     }
 }
-
-game();
