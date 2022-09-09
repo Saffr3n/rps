@@ -29,6 +29,8 @@ function playRound (playerSelection, computerSelection) {
     }
 
     results.appendChild(line);
+
+    if (playerScore === 5 || computerScore === 5) gameOver();
 }
 
 function gameOver() {
@@ -50,11 +52,6 @@ function getComputerChoice() {
 }
 
 function clickHandler (event) {
-    if (playerScore === 5 || computerScore === 5) {
-        gameOver();
-        return;
-    }
-
     playRound(parseInt(event.target.value), getComputerChoice());
 }
 
